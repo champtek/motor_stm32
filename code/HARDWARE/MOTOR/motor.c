@@ -9,7 +9,7 @@ void do_motor(u8 dir,u16 steps)
 	TIM2_TIM3_PWM(1000,steps);
 	
 }
-
+//tim2 set single plus mode,tim3 set gate slave mode
 void Motor_Init(u16 TIM2per, u16 TIM3per, u16 TIM3Compare1)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
@@ -33,8 +33,8 @@ void Motor_Init(u16 TIM2per, u16 TIM3per, u16 TIM3Compare1)
   //TIM2 single plus
   TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;//0 div
   TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;//up count
-  TIM_TimeBaseInitStruct.TIM_Prescaler = 7200;//100us
-  TIM_TimeBaseInitStruct.TIM_Period = TIM2per;//500=50ms
+  TIM_TimeBaseInitStruct.TIM_Prescaler = 7200;//prescaler 100us
+  TIM_TimeBaseInitStruct.TIM_Period = TIM2per;//
   TIM_TimeBaseInit(TIM2,&TIM_TimeBaseInitStruct);
   
   TIM_SelectOnePulseMode(TIM2,TIM_OPMode_Single);//one pluse mode
@@ -57,14 +57,14 @@ void Motor_Init(u16 TIM2per, u16 TIM3per, u16 TIM3Compare1)
   TIM_TimeBaseInitStruct.TIM_Period = TIM3per;//???
   TIM_TimeBaseInit(TIM3,&TIM_TimeBaseInitStruct);
   
-  TIM_SelectSlaveMode(TIM3, TIM_SlaveMode_Gated);//TIM3?????
-  TIM_SelectMasterSlaveMode(TIM3,TIM_MasterSlaveMode_Enable);//??TIM3?????
-  TIM_SelectInputTrigger(TIM3,TIM_TS_ITR1);//????,?TIM2??
+  TIM_SelectSlaveMode(TIM3, TIM_SlaveMode_Gated);//TIM3 set gete slave mode
+  TIM_SelectMasterSlaveMode(TIM3,TIM_MasterSlaveMode_Enable);//enable time mode
+  TIM_SelectInputTrigger(TIM3,TIM_TS_ITR1);//tim2 trig tim3
   
-  TIM_OCInitStruct.TIM_OCMode = TIM_OCMode_PWM2;//??????,??TIMx_CNT<TIMx_CCR1???1?????,???????
+  TIM_OCInitStruct.TIM_OCMode = TIM_OCMode_PWM2;//PWM2
   TIM_OCInitStruct.TIM_OutputState = TIM_OutputState_Enable;//OC1????
   TIM_OCInitStruct.TIM_OCPolarity = TIM_OCPolarity_High;//??????
-  TIM_OCInitStruct.TIM_Pulse = TIM3Compare1;//????1?????
+  TIM_OCInitStruct.TIM_Pulse = TIM3Compare1;//compare mode
   TIM_OC1Init(TIM3,&TIM_OCInitStruct);
   
   TIM_Cmd(TIM3,ENABLE);//??TIM3
@@ -77,8 +77,6 @@ void TIM2_TIM3_PWM(u16 Cycle, u16 Pulse_Num)
 {
   u16 TIM3per = 0;
   u32 Time = 0;
-  //??TIM3????????????????????50%
-  //??TIM2???????????????
     
   Time = Cycle * Pulse_Num;
   Time /= 100;              //????7200,100us????
